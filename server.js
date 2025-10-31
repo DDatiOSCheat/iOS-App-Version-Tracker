@@ -25,7 +25,7 @@ const DEFAULT_COUNTRY = 'vn'; // default shown on UI
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
-app.use(express.static("public"));
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 
 /**
@@ -290,4 +290,5 @@ if (process.env.ENABLE_CRON !== 'false') {
 
 //app.listen(PORT, () => console.log(`✅ Server running at http://localhost:${PORT}`));
 export default app;
+
 
