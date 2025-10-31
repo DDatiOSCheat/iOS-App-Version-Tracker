@@ -6,12 +6,6 @@
       "use": "@vercel/express"
     }
   ],
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/server.js"
-    }
-  ],
   "crons": [
     {
       "path": "/api/refresh",
