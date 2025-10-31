@@ -288,4 +288,6 @@ if (process.env.ENABLE_CRON !== 'false') {
   console.log('[cron] disabled via ENABLE_CRON=false');
 }
 
-app.listen(PORT, () => console.log(`✅ Server running at http://localhost:${PORT}`));
+//app.listen(PORT, () => console.log(`✅ Server running at http://localhost:${PORT}`));
+export default app;
+
