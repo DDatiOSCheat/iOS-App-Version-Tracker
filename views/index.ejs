@@ -1,0 +1,134 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title><%= lookup?.trackName || 'App' %> — Changelog</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body class="light">
+  <div class="container">
+    <header class="topbar glass">
+      <div class="left">
+        <img class="app-icon" src="<%= lookup?.artworkUrl100 || '/default-icon.png' %>" alt="icon" />
+        <div class="meta">
+          <h1><%= lookup?.trackName || 'App' %></h1>
+          <div class="sub">App ID: <%= appId %> • Country: <%= country.toUpperCase() %></div>
+          <div class="rating">
+            <% const rating = Math.round((lookup?.averageUserRating || 4)*2)/2; %>
+            <div class="stars">Rating: <span class="star-value"><%= rating.toFixed(1) %></span> ★</div>
+            <small>(<%= (lookup?.userRatingCount || 0).toLocaleString() %> reviews)</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="right">
+        <div class="controls">
+          <select id="countrySelect">
+            <option value="vn" <%= country==='vn'?'selected':'' %>>Vietnam (VN)</option>
+            <option value="us" <%= country==='us'?'selected':'' %>>United States (US)</option>
+            <option value="gb" <%= country==='gb'?'selected':'' %>>United Kingdom (GB)</option>
+            <option value="jp" <%= country==='jp'?'selected':'' %>>Japan (JP)</option>
+          </select>
+
+          <button id="refreshBtn" class="btn">Refresh</button>
+          <a class="btn primary" href="https://apps.apple.com/<%= country %>/app/id<%= appId %>" target="_blank">View on App Store</a>
+
+          <label class="theme-toggle">
+            <input type="checkbox" id="themeCheckbox" />
+            <span class="theme-slider"></span>
+          </label>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="glass hero">
+        <div class="hero-left">
+          <h2>Current version</h2>
+          <div class="ver"><strong><%= lookup?.version || (saved?.fullData?.lookup?.version || 'N/A') %></strong></div>
+          <div class="date">Updated: <%= new Date(lookup?.currentVersionReleaseDate || saved?.updatedAt || Date.now()).toLocaleDateString() %></div>
+          <pre class="notes"><%= lookup?.releaseNotes || (saved?.fullData?.scraped?.versions?.[0]?.notes || 'No release notes available.') %></pre>
+          <!---<div class="actions">
+          //  <a class="btn" href="">DDatiOS</a>
+          //</div>--->
+        </div>
+
+        <div class="hero-right">
+          <h3>Version history</h3>
+          <div class="history">
+            <% const versions = saved?.fullData?.scraped?.versions || []; %>
+            <% if (versions.length === 0) { %>
+              <div class="muted">No saved history. Click Refresh to fetch.</div>
+            <% } else { %>
+              <% versions.forEach(v => { %>
+                <article class="version-item">
+                  <div class="vhead">
+                    <div><strong><%= v.version || 'Unknown Version' %></strong></div>
+                    <div class="vdate"><%= v.date ? new Date(v.date).toLocaleDateString() : '' %></div>
+                  </div>
+                  <% const notesText = v.notes && v.notes.trim().length > 3 ? v.notes : 'No release notes provided for this version.'; %>
+                  <div class="vnotes"><%= notesText %></div>
+                </article>
+              <% }) %>
+            <% } %>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="foot glass">
+      <small>Auto-check: <%= process.env.CRON_SCHEDULE || '*/10 * * * *' %> • Discord: <%= process.env.DISCORD_WEBHOOK ? 'Configured' : 'Not set' %></small>
+    </footer>
+  </div>
+
+  <script>
+    const appId = "<%= appId %>";
+    const country = "<%= country %>";
+
+    // Theme toggle (persist)
+    const themeCheckbox = document.querySelector('#themeCheckbox');
+    const currentTheme = localStorage.getItem('theme') || 'light';
+    document.body.className = currentTheme;
+    themeCheckbox.checked = currentTheme === 'dark';
+
+    themeCheckbox.addEventListener('change', () => {
+      const t = themeCheckbox.checked ? 'dark' : 'light';
+      document.body.className = t;
+      localStorage.setItem('theme', t);
+    });
+
+    // Country select reload
+    document.querySelector('#countrySelect').addEventListener('change', (e) => {
+      const c = e.target.value;
+      window.location.href = `/?appId=${appId}&country=${c}`;
+    });
+
+    // Refresh button
+    document.querySelector('#refreshBtn').addEventListener('click', async () => {
+      const btn = document.querySelector('#refreshBtn');
+      btn.innerText = 'Refreshing...';
+      btn.disabled = true;
+      try {
+        const response = await fetch('/api/refresh', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ appId, country })
+        });
+        const result = await response.json();
+        console.log(result);
+        window.location.reload();
+      } catch (e) {
+        alert('Error refreshing data. Please check the console.');
+        console.error(e);
+        btn.innerText = 'Refresh';
+        btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
