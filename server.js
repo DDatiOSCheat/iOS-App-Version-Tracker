@@ -188,33 +188,45 @@ async function sendDiscordNotification(content, embeds = []) {
 async function checkAndSave(appId = DEFAULT_APP_ID, country = 'vn', lang = 'vi') {
   try {
     console.log(`[check] start ${appId} @ ${country}`);
+
+    // BƯỚC 1: Đọc dữ liệu cũ TRƯỚC TIÊN
+    const prevData = await loadHistory(appId, country);
+    const prevLatestVersion = prevData?.fullData?.lookup?.version || prevData?.fullData?.scraped?.versions?.[0]?.version || null;
+
+    // BƯỚC 2: Fetch dữ liệu mới
     const lookup = await fetchLookup(appId, country).catch(() => null);
     const scraped = await fetchFullHistory(appId, country, lang);
+    const newData = { lookup, scraped };
 
-    const fullData = { lookup, scraped };
-    const prev = await saveHistory(appId, country, fullData);
+    const latestVersion = newData.lookup?.version || (newData.scraped.versions?.[0]?.version || null);
 
-    // determine latest version string from lookup or first scraped
-    const latestVersion = lookup?.version || (scraped.versions?.[0]?.version || null);
-    const prevLatest = prev?.fullData?.lookup?.version || (prev?.fullData?.scraped?.versions?.[0]?.version || null);
-
-    if (latestVersion && latestVersion !== prevLatest) {
-      // New version detected
+    // BƯỚC 3: So sánh
+    if (latestVersion && latestVersion !== prevLatestVersion) {
+      // CÓ PHIÊN BẢN MỚI
+      console.log(`[check] new version ${latestVersion} (prev ${prevLatestVersion}) — notifying`);
       const title = `Update detected: ${lookup?.trackName || appId} — v${latestVersion}`;
       const notes = lookup?.releaseNotes || (scraped.versions?.[0]?.notes || 'No notes');
       const url = `https://apps.apple.com/${country}/app/id${appId}`;
       const content = `**${title}**\n${notes.substring(0, 800)}\n\n${url}`;
+      
       await sendDiscordNotification(content, [{
         title,
         url,
         description: notes.substring(0, 2000),
         timestamp: new Date().toISOString()
       }]);
-      console.log(`[check] new version ${latestVersion} (prev ${prevLatest}) — notified`);
-      return { changed: true, latestVersion, prevLatest };
+      
+      // BƯỚC 4: Chỉ LƯU LẠI sau khi đã thông báo
+      await saveHistory(appId, country, newData);
+      
+      return { changed: true, latestVersion, prevLatest: prevLatestVersion };
+
     } else {
-      console.log(`[check] no change (latest ${latestVersion} prev ${prevLatest})`);
-      return { changed: false, latestVersion, prevLatest };
+      // KHÔNG CÓ GÌ THAY ĐỔI
+      console.log(`[check] no change (latest ${latestVersion} prev ${prevLatestVersion})`);
+      // Vẫn có thể lưu lại để cập nhật timestamp hoặc các thông tin phụ như rating
+      await saveHistory(appId, country, newData);
+      return { changed: false, latestVersion, prevLatest: prevLatestVersion };
     }
   } catch (e) {
     console.error('[check] error', e?.message || e);
@@ -290,5 +302,6 @@ if (process.env.ENABLE_CRON !== 'false') {
 
 //app.listen(PORT, () => console.log(`✅ Server running at http://localhost:${PORT}`));
 export default app;
+
 
 
