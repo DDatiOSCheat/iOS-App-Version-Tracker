@@ -90,7 +90,6 @@
     const appId = "<%= appId %>";
     const country = "<%= country %>";
 
-    // Theme toggle (persist)
     const themeCheckbox = document.querySelector('#themeCheckbox');
     const currentTheme = localStorage.getItem('theme') || 'light';
     document.body.className = currentTheme;
@@ -102,13 +101,11 @@
       localStorage.setItem('theme', t);
     });
 
-    // Country select reload
     document.querySelector('#countrySelect').addEventListener('change', (e) => {
       const c = e.target.value;
       window.location.href = `/?appId=${appId}&country=${c}`;
     });
 
-    // Refresh button
     document.querySelector('#refreshBtn').addEventListener('click', async () => {
       const btn = document.querySelector('#refreshBtn');
       btn.innerText = 'Refreshing...';
@@ -131,4 +128,5 @@
     });
   </script>
 </body>
+
 </html>
