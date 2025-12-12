@@ -1,9 +1,7 @@
-/* ===== Root & Theme Variables ===== */
 :root {
   --radius: 20px;
   --blur: 18px;
 
-  /* Light Theme */
   --bg-light: linear-gradient(145deg, #eef2f9, #ffffff);
   --text-light: #1d1d1f;
   --glass-bg-light: rgba(255, 255, 255, 0.6);
@@ -12,7 +10,6 @@
   --inner-shadow-light: inset 0 1px 1px rgba(255,255,255,0.7);
   --note-bg-light: rgba(0, 0, 0, 0.04);
 
-  /* Dark Theme */
   --bg-dark: radial-gradient(circle at top, #2c2c2e, #111113);
   --text-dark: #f5f5f7;
   --glass-bg-dark: rgba(28, 28, 30, 0.5);
@@ -22,7 +19,6 @@
   --note-bg-dark: rgba(255, 255, 255, 0.05);
 }
 
-/* ===== Global Styles ===== */
 html, body {
   margin: 0;
   padding: 0;
@@ -47,7 +43,6 @@ body.dark {
   padding: 20px;
 }
 
-/* ===== Glass Utility ===== */
 .glass {
   backdrop-filter: blur(var(--blur));
   -webkit-backdrop-filter: blur(var(--blur));
@@ -65,7 +60,6 @@ body.dark .glass {
   box-shadow: 0 8px 32px 0 var(--shadow-dark), var(--inner-shadow-dark);
 }
 
-/* ===== Topbar & Header ===== */
 .topbar {
   padding: 15px 20px;
   display: flex;
@@ -83,7 +77,7 @@ body.dark .glass {
 .app-icon {
   width: 68px;
   height: 68px;
-  border-radius: 22.5%; /* iOS icon radius */
+  border-radius: 22.5%;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   flex-shrink: 0;
 }
@@ -111,7 +105,6 @@ body.dark .meta .sub, body.dark .meta .rating {
   justify-content: flex-end;
 }
 
-/* ===== Form Elements (Buttons, Select) ===== */
 .btn, select {
   padding: 9px 16px;
   border-radius: 12px;
@@ -139,14 +132,13 @@ body.light .btn, body.light select {
 }
 body.dark .btn, body.dark select {
   background: rgba(255,255,255,0.1);
-  color: var(--text-dark); /* Chữ trắng cho nút Select và nút thường */
+  color: var(--text-dark);
   border-color: rgba(255,255,255,0.1);
 }
 
-/* === CẬP NHẬT Ở ĐÂY === */
 .btn.primary {
   background: linear-gradient(180deg, #007aff, #006adc);
-  color: var(--text-dark); /* Dùng màu off-white nhất quán, dịu mắt hơn */
+  color: var(--text-dark);
   border: none;
 }
 select {
@@ -162,8 +154,6 @@ body.dark select {
   background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23ccc%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E');
 }
 
-
-/* ===== Theme Toggle Switch ===== */
 .theme-toggle {
   position: relative;
   display: inline-block;
@@ -205,7 +195,6 @@ input:checked + .theme-slider:before {
   transform: translateX(22px);
 }
 
-/* ===== Main Content Area ===== */
 .hero {
   padding: 25px;
   display: grid;
@@ -213,7 +202,7 @@ input:checked + .theme-slider:before {
   gap: 25px;
 }
 .hero-left, .hero-right {
-  min-width: 0; /* Prevents grid blowout */
+  min-width: 0;
 }
 .ver {
   font-size: 32px;
@@ -231,7 +220,7 @@ body.dark .ver {
 }
 .notes, .vnotes {
   white-space: pre-wrap;
-  word-break: break-word; /* <<< FIX: Chống tràn text */
+  word-break: break-word;
   border-radius: 14px;
   padding: 15px;
   font-size: 14px;
@@ -242,9 +231,8 @@ body.light .notes, body.light .vnotes { background: var(--note-bg-light); }
 body.dark .notes, body.dark .vnotes { background: var(--note-bg-dark); }
 .actions { margin-top: 20px; }
 
-/* ===== Version History List ===== */
 .history {
-  max-height: 480px; /* Tăng chiều cao một chút */
+  max-height: 480px;
   overflow-y: auto;
   padding-right: 10px;
 }
@@ -286,7 +274,6 @@ body.dark .version-item {
   opacity: 0.6;
 }
 
-/* ===== Footer ===== */
 .foot {
   margin-top: 35px;
   padding: 15px;
@@ -295,7 +282,6 @@ body.dark .version-item {
   opacity: 0.8;
 }
 
-/* ===== Responsive Design (for Mobile) ===== */
 @media (max-width: 768px) {
   .container {
     padding: 10px;
@@ -309,7 +295,7 @@ body.dark .version-item {
     justify-content: flex-start;
   }
   .hero {
-    grid-template-columns: 1fr; /* Stack 2 cột thành 1 */
+    grid-template-columns: 1fr;
     gap: 30px;
     padding: 20px;
   }
@@ -321,7 +307,7 @@ body.dark .version-item {
     height: 60px;
   }
   .history {
-    max-height: none; /* Hiển thị toàn bộ lịch sử trên mobile */
+    max-height: none;
     overflow-y: visible;
     padding-right: 0;
   }
